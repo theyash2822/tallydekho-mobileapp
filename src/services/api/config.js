@@ -9,9 +9,8 @@ const ENV = {
 
 // Current environment - change this based on your build config
 
-// const CURRENT_ENV = __DEV__ ? ENV.DEV : ENV.PROD;
-
-const CURRENT_ENV = ENV.DEV;
+const CURRENT_ENV = __DEV__ ? ENV.DEV : ENV.PROD;
+// const CURRENT_ENV = ENV.DEV; // removed - was hardcoded
 
 // API Base URLs for different environments
 const API_BASE_URLS = {
@@ -56,6 +55,12 @@ export const API_ENDPOINTS = {
   // Ledgers
   LEDGERS: '/ledgers',
   LEDGER: '/ledger',
+
+  // New endpoints added in backend v1.0
+  VOUCHERS: '/vouchers',
+  DASHBOARD: '/dashboard',
+  REPORTS_PL: '/reports/pl',
+  REPORTS_BALANCE_SHEET: '/reports/balance-sheet',
 
   // Stocks
   STOCK_DASHBOARD: '/stock-dashboard',
