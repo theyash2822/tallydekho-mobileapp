@@ -1,0 +1,30 @@
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "name": "Debug iOS Device",
+//       "type": "reactnative",
+//       "request": "launch",
+//       "platform": "ios",
+//       "target": "device",
+//       "runArguments": ["--device"],
+//       "cwd": "${workspaceFolder}",
+//       "port": 8082
+//     }
+//   ]
+// }
+
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug iOS Simulator",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "ios",
+      "target": "simulator",
+      "port": 8081
+    }
+  ]
+}
