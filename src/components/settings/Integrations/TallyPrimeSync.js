@@ -37,7 +37,7 @@ import {setupBlinkAnimation} from './utils/pairingAnimation';
 
 const TallyERPSync = () => {
   const navigation = useNavigation();
-  const [code, setCode] = useState(['', '', '', '']);
+  const [code, setCode] = useState(['', '', '', '', '', '']);
   const [showModal, setShowModal] = useState(false);
   const [isPairing, setIsPairing] = useState(false);
   const [lastSync, setLastSync] = useState(null);
@@ -267,7 +267,7 @@ const TallyERPSync = () => {
                   ))}
                 </View>
 
-                <Text style={styles.instructionText}>Enter 4-digit code</Text>
+                <Text style={styles.instructionText}>Enter 6-digit code</Text>
 
                 <TouchableOpacity
                   style={[
@@ -367,7 +367,7 @@ const TallyERPSync = () => {
               <Text style={styles.instructionNumber}>5.</Text>
               <Text style={styles.modalInstructionText}>
                 Once the company is successfully synced, a{' '}
-                <Text style={styles.boldText}>4-digit code</Text> will be
+                <Text style={styles.boldText}>6-digit code</Text> will be
                 displayed in the TallyDekho desktop application.
               </Text>
             </View>

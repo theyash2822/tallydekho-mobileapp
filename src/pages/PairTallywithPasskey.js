@@ -5,8 +5,8 @@
 // import BackgroundWrapper from '../../common/Backgroundwrapper';
 
 // const PairTallywithPasskey = ({ navigation }) => {
-//     const [pairKey, setPairKey] = useState(['', '', '', '']);
-//     const inputRefs = [useRef(), useRef(), useRef(), useRef()];
+//     const [pairKey, setPairKey] = useState(['', '', '', '', '', '']);
+//     const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
 //     const handleChange = (text, index) => {
 //         if (text.length > 1) return;
@@ -44,7 +44,7 @@
 //                 <Text style={styles.tallyDekhoText}>Tallydekho</Text>
 //             </View>
 //             <Text style={[globalStyles.textSemibold(36), styles.heading]}>Input Your Tally Pair Key</Text>
-//             <Text style={[globalStyles.textRegular(14), styles.subText]}>Please check your Tally application to see the pair key.</Text>
+//             <Text style={[globalStyles.textRegular(14), styles.subText]}>Enter the 6-digit code shown in TallyDekho Desktop app.</Text>
 //             <View style={styles.inputContainer}>
 //                 {pairKey.map((value, index) => (
 //                     <TextInput
@@ -165,10 +165,10 @@ import {AuthContext} from '../context/AuthContext';
 import { BackgroundWrapper } from '../components/common';
 
 const PairTallywithPasskey = ({navigation}) => {
-  const [pairKey, setPairKey] = useState(['', '', '', '']);
+  const [pairKey, setPairKey] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRefs = [useRef(), useRef(), useRef(), useRef()];
+  const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
   const backspaceRef = useRef(false);
   const {fetchCompaniesData} = useContext(AuthContext);
 
@@ -244,7 +244,7 @@ const PairTallywithPasskey = ({navigation}) => {
     Keyboard.dismiss();
     const enteredKey = pairKey.join('');
 
-    if (enteredKey.length !== 4) {
+    if (enteredKey.length !== 6) {
       setError(true);
       return;
     }
@@ -319,7 +319,7 @@ const PairTallywithPasskey = ({navigation}) => {
         Input Your Tally Pair Key
       </TextSemibold>
       <TextRegular fontSize={14} color={'#93b1a3'} style={styles.subText}>
-        Please check your Tally application to see the pair key.
+        Enter the 6-digit code shown in TallyDekho Desktop app.
       </TextRegular>
       <View style={styles.inputContainer}>
         {pairKey.map((value, index) => (
