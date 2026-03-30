@@ -187,7 +187,7 @@ export const fetchPairing = async ({
 
 /**
  * Pair device with Tally
- * @param {string} fullCode - 4-digit pairing code
+ * @param {string} fullCode - 6-digit pairing code
  * @param {Function} setIsPairing - Function to update pairing state
  * @param {Function} setLastSync - Function to update last sync time
  * @param {Function} setIsPaired - Function to update paired state
@@ -208,8 +208,8 @@ export const handlePairNow = async ({
 }) => {
   Logger.info('handlePairNow called', {fullCode, length: fullCode.length});
 
-  if (fullCode.length !== 4) {
-    Alert.alert('Error', `Code must be 4 digits. Current length: ${fullCode.length}`);
+  if (fullCode.length !== 6) {
+    Alert.alert('Error', `Code must be 6 digits. Current length: ${fullCode.length}`);
     Logger.warn('Invalid code length', {length: fullCode.length});
     return;
   }
