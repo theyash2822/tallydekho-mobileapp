@@ -65,6 +65,6 @@ export const handleKeyPress = (e, index, code, setCode, inputRefs) => {
  */
 export const handleCancelPairing = (setIsPairing, setCode) => {
   setIsPairing(false);
-  setCode(['', '', '', '']);
+  setCode(['', '', '', '', '', '']);
 };
 

@@ -38,7 +38,7 @@ export const unpairDevice = async ({
       setCompanies([]);
     }
     setIsPaired(false);
-    setCode(['', '', '', '']);
+    setCode(['', '', '', '', '', '']);
 
     // Fetch companies to get demo company after unpairing
     if (fetchCompaniesData) {
@@ -129,7 +129,7 @@ export const fetchPairing = async ({
 
                 // Update UI state
                 setIsPaired(false);
-                setCode(['', '', '', '']);
+                setCode(['', '', '', '', '', '']);
 
                 // Fetch companies to get demo company
                 if (fetchCompaniesData) {
@@ -167,7 +167,7 @@ export const fetchPairing = async ({
 
         // Update UI state
         setIsPaired(false);
-        setCode(['', '', '', '']);
+        setCode(['', '', '', '', '', '']);
 
         // Fetch companies to get demo company
         if (fetchCompaniesData) {
