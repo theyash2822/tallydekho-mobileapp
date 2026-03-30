@@ -1,4 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
+import PairingScreen from '../../pairing/PairingScreen';
 import {
   View,
   Text,
