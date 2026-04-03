@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   button: {
-    backgroundColor: '#07624c',
+    backgroundColor: Colors.primary,
     paddingVertical: 10,
     borderRadius: 32,
     marginTop: 16,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    color: '#EF4444',
+    color: Colors.error,
     fontSize: 13,
     marginTop: 6,
     marginLeft: 4,

@@ -1,116 +1,9 @@
-// import {createContext, useEffect, useState} from 'react';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import apiService from '../components/api/ApiServces';
-// import {Alert} from 'react-native';
-
-// const defaultValues = {
-//   companies: [],
-//   loading: false,
-//   error: null,
-//   selectedGuid: null,
-//   selectedCompany: null,
-//   saveGuid: () => {},
-//   setSelectedCompany: () => {},
-//   setSelectedFY: () => {},
-//   fetchCompaniesData: () => {},
-// };
-
-// const AuthContext = createContext(defaultValues);
-
-// const AuthProvider = ({children}) => {
-//   const [companies, setCompanies] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const [selectedGuid, setSelectedGuid] = useState(null);
-//   const [selectedCompany, setSelectedCompany] = useState(null);
-//   const [selectedFY, setSelectedFY] = useState(null);
-
-//   useEffect(() => {
-//     loadSavedGuid();
-//   }, []);
-
-//   useEffect(() => {
-//     if (companies.length > 0 && selectedGuid) {
-//       const found = companies.find(c => c.id === selectedGuid);
-//       if (found) setSelectedCompany(found);
-//     }
-//   }, [companies, selectedGuid]);
-
-//   const loadSavedGuid = async () => {
-//     try {
-//       const storedGuid = await AsyncStorage.getItem('SELECTED_GUID');
-//       if (storedGuid) {
-//         setSelectedGuid(storedGuid);
-//       }
-//     } catch (err) {
-//       console.error('Error loading saved GUID:', err);
-//     }
-//   };
-
-//   const saveGuid = async guid => {
-//     try {
-//       setSelectedGuid(guid);
-//       await AsyncStorage.setItem('SELECTED_GUID', guid);
-
-//       const company = companies.find(c => c.id === guid);
-//       if (company) setSelectedCompany(company);
-//     } catch (err) {
-//       console.error('Error saving GUID:', err);
-//     }
-//   };
-
-//   const fetchCompaniesData = async () => {
-//     try {
-//       setLoading(true);
-//       setError(null);
-
-//       const data = await apiService.fetchCompanies();
-
-//       if (data?.status && data?.data?.companies) {
-//         const formattedCompanies = data.data.companies.map(company => ({
-//           id: company.guid,
-//           name: company.name,
-//           years: company.years,
-//         }));
-
-//         setCompanies(formattedCompanies);
-//       } else {
-//         setError('No companies found');
-//       }
-//     } catch (err) {
-//       console.error('Error fetching companies:', err);
-//       Alert.alert('Error', err.message || 'Failed to load companies');
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const values = {
-//     companies,
-//     loading,
-//     error,
-//     selectedGuid,
-//     selectedCompany,
-//     saveGuid,
-//     setSelectedCompany,
-//     selectedFY,
-//     setSelectedFY,
-//     fetchCompaniesData,
-//   };
-
-//   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
-// };
-
-// export {AuthProvider, AuthContext};
-
-import {createContext, useEffect, useState} from 'react';
+import {createContext, useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiService from '../services/api/apiService';
 import {Logger} from '../services/utils/logger';
 import {Alert} from 'react-native';
 import wsService from '../services/websocket/websocketService';
-import {navigateNext} from '../navigation/FlowController';
 
 const defaultValues = {
   companies: [],
@@ -158,19 +51,6 @@ const AuthProvider = ({children}) => {
       setSelectedFY(defaultFY || null);
     }
   }, [selectedCompany, selectedFY]);
-
-  // useEffect(() => {
-  //   const initialize = async () => {
-  //     await loadSavedGuid();
-  //     // ✅ Check if token exists, if yes load companies from cache
-  //     const authToken = await AsyncStorage.getItem('authToken');
-  //     if (authToken) {
-  //       console.log('🔐 Auth token found, loading cached companies...');
-  //       await loadCachedCompanies();
-  //     }
-  //   };
-  //   initialize();
-  // }, []);
 
   useEffect(() => {
     const initialize = async () => {
@@ -250,7 +130,7 @@ const AuthProvider = ({children}) => {
     }
   };
 
-  const fetchCompaniesData = async options => {
+  const fetchCompaniesData = useCallback(async options => {
     const normalizedOptions =
       typeof options === 'boolean'
         ? {force: options}
@@ -297,7 +177,8 @@ const AuthProvider = ({children}) => {
     } finally {
       setLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // WebSocket event listeners
   useEffect(() => {

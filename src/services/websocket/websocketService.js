@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {io} from 'socket.io-client';
 import {API_CONFIG} from '../api/config';
 import {Logger} from '../utils/logger';
+import {navigate, reset} from '../../navigation/navigationRef';
 
 class WebSocketService {
   constructor() {
@@ -183,7 +184,7 @@ class WebSocketService {
       this.socket.disconnect();
       this.socket = null;
     }
-    this.isConnected = false;
+    this._connected = false;
     this.isConnecting = false;
     // Don't set isIntentionallyClosed = true, so WebSocketProvider can reconnect
 
@@ -198,42 +199,18 @@ class WebSocketService {
             Logger.info('[Socket.IO] User acknowledged unpair alert, navigating to PairTallywithPasskey');
             // Emit event for app to handle (e.g., clear companies)
             this.emit('unpaired', payload);
-            
-            // Navigate to PairTallywithPasskey screen
-            // Use navigation ref if available
-            if (this.navigationRef && this.navigationRef.current) {
-              try {
-                this.navigationRef.current.navigate('pairWithPassKey');
-                Logger.info('[Socket.IO] Navigated to PairTallywithPasskey via navigation ref');
-              } catch (navError) {
-                Logger.error('[Socket.IO] Navigation error', navError);
-                // Fallback: try using reset to ensure navigation works
-                try {
-                  this.navigationRef.current.reset({
-                    index: 0,
-                    routes: [{name: 'pairWithPassKey'}],
-                  });
-                  Logger.info('[Socket.IO] Navigated to PairTallywithPasskey via reset');
-                } catch (resetError) {
-                  Logger.error('[Socket.IO] Reset navigation error', resetError);
-                }
-              }
-            } else {
-              Logger.warn('[Socket.IO] Navigation ref not available, cannot navigate');
+            // Navigate using global navigationRef
+            try {
+              reset({index: 0, routes: [{name: 'pairWithPassKey'}]});
+              Logger.info('[Socket.IO] Navigated to pairWithPassKey via navigationRef');
+            } catch (navError) {
+              Logger.error('[Socket.IO] Navigation error', navError);
             }
           },
         },
       ],
       {cancelable: false},
     );
-  }
-
-  /**
-   * Set navigation ref for programmatic navigation
-   * @param {Object} navigationRef - React Navigation ref
-   */
-  setNavigationRef(navigationRef) {
-    this.navigationRef = navigationRef;
   }
 
   /**
@@ -273,15 +250,12 @@ class WebSocketService {
             Logger.info('[Socket.IO] User acknowledged logout alert');
             // Emit event for app to handle (e.g., navigate to login)
             this.emit('logout', payload);
-            
-            // Navigate to login screen
-            if (this.navigationRef && this.navigationRef.current) {
-              try {
-                this.navigationRef.current.navigate('login');
-                Logger.info('[Socket.IO] Navigated to login screen after logout');
-              } catch (navError) {
-                Logger.error('[Socket.IO] Navigation error after logout', navError);
-              }
+            // Navigate using global navigationRef
+            try {
+              reset({index: 0, routes: [{name: 'login'}]});
+              Logger.info('[Socket.IO] Navigated to login via navigationRef');
+            } catch (navError) {
+              Logger.error('[Socket.IO] Navigation error after logout', navError);
             }
           },
         },
@@ -406,6 +380,7 @@ class WebSocketService {
    */
   isConnected() {
     const connected = this.socket?.connected === true;
+    this._connected = connected; // keep internal flag in sync
     if (connected) {
       Logger.debug('[Socket.IO] Connection status: CONNECTED', {socketId: this.socket.id});
     } else {

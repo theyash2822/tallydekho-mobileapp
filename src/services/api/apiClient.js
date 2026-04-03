@@ -10,8 +10,6 @@ import {Logger} from '../utils/logger';
 // Request cache and deduplication
 const requestCache = new Map();
 const pendingRequests = new Map();
-const requestQueue = [];
-let activeRequests = 0;
 
 /**
  * Generate a unique cache key for requests
@@ -96,8 +94,8 @@ apiClient.interceptors.request.use(
     // Generate unique request ID
     config.requestId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // Check network connectivity
-    const isConnected = await NetworkMonitor.isConnected();
+    // Check network connectivity — use cached state to avoid async NetInfo.fetch() per request
+    const isConnected = NetworkMonitor.isNetworkConnected;
     if (!isConnected) {
       Logger.error('No network connection');
       return Promise.reject({
@@ -422,9 +420,6 @@ export const apiPost = (url, data, config) =>
 
 export const apiPut = (url, data, config) => 
   request('put', url, data, config);
-
-export const apiPatch = (url, data, config) => 
-  request('patch', url, data, config);
 
 export const apiDelete = (url, params, config) => 
   request('delete', url, params, config);

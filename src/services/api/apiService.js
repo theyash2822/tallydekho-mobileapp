@@ -359,6 +359,93 @@ class ApiService {
     }
   }
 
+  // ==================== Dashboard APIs ====================
+
+  /**
+   * Fetch dashboard KPIs
+   * @param {Object} body - { companyGuid, fromDate?, toDate? }
+   * @returns {Promise<Object>}
+   */
+  async fetchDashboard(body) {
+    try {
+      const {companyGuid} = body || {};
+      Logger.debug('Fetching dashboard', {companyGuid});
+      const response = await apiPost(API_ENDPOINTS.DASHBOARD, body, {
+        deduplicate: true,
+      });
+      return response;
+    } catch (error) {
+      Logger.apiError('fetchDashboard', error, body);
+      throw error;
+    }
+  }
+
+  // ==================== Voucher APIs ====================
+
+  /**
+   * Fetch vouchers list with filters and pagination
+   * @param {Object} body - { companyGuid, voucherType?, page, pageSize, searchText, fromDate, toDate }
+   * @returns {Promise<Object>}
+   */
+  async fetchVouchers(body) {
+    try {
+      const {companyGuid, page = 1} = body || {};
+      Logger.debug('Fetching vouchers', {companyGuid, page});
+      const response = await apiPost(API_ENDPOINTS.VOUCHERS, body, {
+        deduplicate: page === 1,
+      });
+      Logger.debug('Vouchers fetched', {
+        count: response?.data?.vouchers?.length,
+        total: response?.data?.total,
+        page,
+      });
+      return response;
+    } catch (error) {
+      Logger.apiError('fetchVouchers', error, body);
+      throw error;
+    }
+  }
+
+  // ==================== Reports APIs ====================
+
+  /**
+   * Fetch Profit & Loss report
+   * @param {Object} body - { companyGuid, fromDate?, toDate? }
+   * @returns {Promise<Object>}
+   */
+  async fetchReportsPL(body) {
+    try {
+      Logger.debug('Fetching P&L report', {companyGuid: body?.companyGuid});
+      const response = await apiPost(API_ENDPOINTS.REPORTS_PL, body, {
+        cache: true,
+        cacheTTL: 300000, // 5 min cache
+      });
+      return response;
+    } catch (error) {
+      Logger.apiError('fetchReportsPL', error, body);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch Balance Sheet report
+   * @param {Object} body - { companyGuid }
+   * @returns {Promise<Object>}
+   */
+  async fetchReportsBS(body) {
+    try {
+      Logger.debug('Fetching Balance Sheet', {companyGuid: body?.companyGuid});
+      const response = await apiPost(API_ENDPOINTS.REPORTS_BALANCE_SHEET, body, {
+        cache: true,
+        cacheTTL: 300000, // 5 min cache
+      });
+      return response;
+    } catch (error) {
+      Logger.apiError('fetchReportsBS', error, body);
+      throw error;
+    }
+  }
+
   // ==================== Utility Methods ====================
 
   /**

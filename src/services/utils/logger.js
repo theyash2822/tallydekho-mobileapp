@@ -36,6 +36,7 @@ class LoggerClass {
   debug(message, data) {
     if (CURRENT_LOG_LEVEL <= LOG_LEVELS.DEBUG && LOG_CONFIG.enableDebugLogs) {
       const formatted = this.formatMessage('DEBUG', message, data);
+      console.log(formatted);
     }
   }
 
@@ -80,6 +81,7 @@ class LoggerClass {
   network(type, details) {
     if (LOG_CONFIG.enableNetworkLogs) {
       const icon = type === 'request' ? '📤' : '📥';
+      console.log(`${icon} [NETWORK] [${type.toUpperCase()}]`, details);
     }
   }
 
@@ -88,6 +90,7 @@ class LoggerClass {
    */
   performance(label, duration) {
     if (LOG_CONFIG.enablePerformanceLogs) {
+      console.log(`[PERF] ${label}: ${duration}ms`);
     }
   }
 

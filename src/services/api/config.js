@@ -16,14 +16,14 @@ const CURRENT_ENV = __DEV__ ? ENV.DEV : ENV.PROD;
 const API_BASE_URLS = {
   [ENV.DEV]: 'http://192.168.29.39:3001/app', // Local backend — change to your IP
   [ENV.STAGING]: 'https://staging.tallydekho.com/app',
-  [ENV.PROD]: 'http://192.168.29.39:3001/app', // TODO: Change to your AWS domain before production release
+  [ENV.PROD]: 'https://api.tallydekho.com/app', // Production AWS domain
 };
 
 // WebSocket URLs for different environments
 const WS_BASE_URLS = {
   [ENV.DEV]: 'ws://192.168.29.39:3001', // Local backend — change to your IP
   [ENV.STAGING]: 'wss://staging.tallydekho.com',
-  [ENV.PROD]: 'ws://192.168.29.39:3001', // TODO: Change to your AWS domain before production release
+  [ENV.PROD]: 'wss://api.tallydekho.com', // Production AWS domain
 };
 
 // API Configuration
@@ -44,7 +44,7 @@ export const API_ENDPOINTS = {
   PAIRING: '/pairing',
   VERIFY: '/verify',
   PAIRING_DEVICE: '/pairing-device',
-  PAIRED_DEVICE: '/paired-device',
+  // PAIRED_DEVICE is an alias for PAIRING_DEVICE — use PAIRING_DEVICE
   SEND_OTP: '/send-otp',
   VERIFY_OTP: '/verify-otp',
   ONBOARDING: '/onboarding',

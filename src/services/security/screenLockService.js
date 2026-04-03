@@ -83,15 +83,6 @@ class ScreenLockService {
 
 
   /**
-   * Set up app state listener (removed - we don't lock on background anymore)
-   * App only locks on startup, which is handled in App.js
-   */
-  setupAppStateListener() {
-    // No longer needed - we only lock on app startup, not on background
-    // Keeping this method for backward compatibility but it does nothing
-  }
-
-  /**
    * Remove app state listener
    */
   removeAppStateListener() {
