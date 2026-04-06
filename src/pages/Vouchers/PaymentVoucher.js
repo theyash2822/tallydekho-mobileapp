@@ -1,15 +1,64 @@
-import React, {useRef} from 'react';
-import {ScrollView, View, StyleSheet, Platform} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {ScrollView, View, StyleSheet, Platform, Alert, ActivityIndicator} from 'react-native';
 import Header from '../../components/common/Header';
 import VoucherInfo from '../../components/voucher/VoucherInfo';
 import PaymentVoucherForm from '../../components/voucher/PaymentVoucherForm';
 import BottomArea from '../../components/common/BottomArea';
 import {commonScreenStyles} from '../Invoice/ScreenStyles';
 import useKeyboardVisibility from '../../hooks/useKeyboardVisibility';
+import {tallyWriteAPI} from '../../services/api/apiService';
+import {useAuth} from '../../context/AuthContext';
 
 const PaymentVoucher = ({navigation}) => {
   const scrollViewRef = useRef(null);
+  const formRef = useRef(null);
   const isKeyboardVisible = useKeyboardVisibility();
+  const [submitting, setSubmitting] = useState(false);
+  const {selectedCompany} = useAuth();
+
+  const handleSubmit = async (isOptional = false) => {
+    const formData = formRef.current?.getFormData?.();
+    if (!formData) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+    if (!selectedCompany) {
+      Alert.alert('Error', 'No company selected');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await tallyWriteAPI.createPayment({
+        companyGuid: selectedCompany.guid || selectedCompany.id,
+        companyName: selectedCompany.name,
+        date: formData.date?.replace(/-/g, '') || new Date().toISOString().slice(0,10).replace(/-/g,''),
+        partyLedger: formData.partyLedger,
+        bankLedger: formData.bankLedger,
+        amount: formData.amount,
+        narration: formData.narration || '',
+        reference: formData.reference || '',
+        isOptional,
+      });
+
+      if (result?.status) {
+        const num = result?.data && typeof result.data === 'string'
+          ? (result.data.match(/<VOUCHERNUMBER>(.*?)<\/VOUCHERNUMBER>/i)?.[1] || '')
+          : '';
+        Alert.alert(
+          isOptional ? 'Optional Entry Saved' : 'Payment Created in Tally',
+          `${num ? `Voucher: ${num}\n` : ''}₹${parseFloat(formData.amount).toLocaleString('en-IN')} ${isOptional ? '(optional - not posted to books)' : 'posted to Tally'}`,
+          [{text: 'OK', onPress: () => navigation.goBack()}]
+        );
+      } else {
+        Alert.alert('Tally Error', result?.message || 'Failed to create payment');
+      }
+    } catch (e) {
+      Alert.alert('Error', e.message || 'Failed to connect to Tally');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <View style={commonScreenStyles.container}>
@@ -29,12 +78,19 @@ const PaymentVoucher = ({navigation}) => {
         keyboardDismissMode="interactive">
         <VoucherInfo />
         <PaymentVoucherForm
+          ref={formRef}
           scrollViewRef={scrollViewRef}
           isKeyboardVisible={isKeyboardVisible}
         />
         <View style={commonScreenStyles.bottomSpacer} />
       </ScrollView>
-      <BottomArea buttonText="Submit Payment" showSecondButton={true} />
+      <BottomArea
+        buttonText={submitting ? 'Submitting...' : 'Submit Payment'}
+        showSecondButton={true}
+        secondButtonText="Save as Optional"
+        onPress={() => !submitting && handleSubmit(false)}
+        onSecondPress={() => !submitting && handleSubmit(true)}
+      />
     </View>
   );
 };

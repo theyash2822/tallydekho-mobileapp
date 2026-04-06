@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, forwardRef, useImperativeHandle} from 'react';
 import {View, Text} from 'react-native';
 import {
   SearchableDropdown,
@@ -11,14 +11,32 @@ import {
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Payment Voucher Form
-const PaymentVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
+const PaymentVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Bank');
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
 
-  // Inputs
+  // Tracked form state
   const [partySearch, setPartySearch] = useState('');
   const [invoiceSearch, setInvoiceSearch] = useState('');
   const [bankSearch, setBankSearch] = useState('');
+  const [amount, setAmount] = useState('');
+  const [refNo, setRefNo] = useState('');
+  const [narration, setNarration] = useState('');
+
+  // Expose getFormData to parent via ref
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      if (!partySearch || !amount) return null;
+      return {
+        partyLedger: partySearch,
+        bankLedger: bankSearch || (selectedPaymentMethod === 'Cash' ? 'Cash in Hand' : ''),
+        amount: parseFloat(amount) || 0,
+        reference: refNo,
+        narration,
+        date: new Date().toISOString().slice(0, 10),
+      };
+    },
+  }));
 
   // Refs for input navigation
   const partyInputRef = useRef(null);
@@ -76,6 +94,8 @@ const PaymentVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
             label="Amount"
             placeholder="Enter amount"
             keyboardType="numeric"
+            value={amount}
+            onChangeText={setAmount}
             inputRef={amountInputRef}
             nextInputRef={selectedPaymentMethod !== 'Cash' ? bankInputRef : narrationInputRef}
             returnKeyType="next"
@@ -136,6 +156,6 @@ const PaymentVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
       />
     </View>
   );
-};
+});
 
 export default PaymentVoucherForm;
