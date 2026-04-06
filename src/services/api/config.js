@@ -14,14 +14,14 @@ const CURRENT_ENV = __DEV__ ? ENV.DEV : ENV.PROD;
 
 // API Base URLs for different environments
 const API_BASE_URLS = {
-  [ENV.DEV]: 'http://192.168.29.39:3001/app', // Local backend — change to your IP
+  [ENV.DEV]: 'http://192.168.29.241:3001/app', // Local backend — change to your IP
   [ENV.STAGING]: 'https://staging.tallydekho.com/app',
   [ENV.PROD]: 'https://api.tallydekho.com/app', // Production AWS domain
 };
 
 // WebSocket URLs for different environments
 const WS_BASE_URLS = {
-  [ENV.DEV]: 'ws://192.168.29.39:3001', // Local backend — change to your IP
+  [ENV.DEV]: 'ws://192.168.29.241:3001', // Local backend — change to your IP
   [ENV.STAGING]: 'wss://staging.tallydekho.com',
   [ENV.PROD]: 'wss://api.tallydekho.com', // Production AWS domain
 };
