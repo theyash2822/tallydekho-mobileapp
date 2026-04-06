@@ -11,7 +11,7 @@ import {
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Receipt Voucher Form
-const ReceiptVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
+const ReceiptVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Bank');
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
 
@@ -19,6 +19,23 @@ const ReceiptVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
   const [partySearch, setPartySearch] = useState('');
   const [invoiceSearch, setInvoiceSearch] = useState('');
   const [bankSearch, setBankSearch] = useState('');
+  const [amount, setAmount] = useState('');
+  const [refNo, setRefNo] = useState('');
+  const [narration, setNarration] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      if (!partySearch || !amount) return null;
+      return {
+        partyLedger: partySearch,
+        bankLedger: bankSearch || (selectedPaymentMethod === 'Cash' ? 'Cash in Hand' : ''),
+        amount: parseFloat(amount) || 0,
+        reference: refNo,
+        narration,
+        date: new Date().toISOString().slice(0, 10),
+      };
+    },
+  }));
 
   // Refs for input navigation
   const partyInputRef = useRef(null);
@@ -76,6 +93,8 @@ const ReceiptVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
             label="Amount"
             placeholder="Enter amount"
             keyboardType="numeric"
+            value={amount}
+            onChangeText={setAmount}
             inputRef={amountInputRef}
             nextInputRef={selectedPaymentMethod !== 'Cash' ? bankInputRef : narrationInputRef}
             returnKeyType="next"
@@ -127,12 +146,15 @@ const ReceiptVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
         placeholder="Enter Notes"
         multiline
         style={{height: 80}}
+        value={narration}
+        onChangeText={setNarration}
         inputRef={narrationInputRef}
         returnKeyType="done"
         scrollViewRef={scrollViewRef}
       />
     </View>
   );
-};
+});
 
 export default ReceiptVoucherForm;
+

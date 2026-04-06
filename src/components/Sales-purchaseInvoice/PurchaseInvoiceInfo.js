@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -28,7 +28,7 @@ const ledgerOptions = [
 ];
 
 
-const PurchaseInvoiceInfo = ({ scrollViewRef }) => {
+const PurchaseInvoiceInfo = forwardRef(({ scrollViewRef }, ref) => {
   const navigation = useNavigation();
   const [ledger, setLedger] = useState('');
   const [ledgerDropdownVisible, setLedgerDropdownVisible] = useState(false);
@@ -46,8 +46,22 @@ const PurchaseInvoiceInfo = ({ scrollViewRef }) => {
   const vendorInputRef = useRef(null);
   const referenceNumberInputRef = useRef(null);
 
+  const [selectedVendor, setSelectedVendor] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => ({
+      partyLedger: selectedVendor,
+      purchaseLedger: ledger || 'Purchase Accounts',
+      date: dateValues.order
+        ? dateValues.order.toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+      invoiceNumber,
+      referenceNumber,
+    }),
+  }));
+
   const handleVendorSelect = vendor => {
-    console.log('Selected vendor:', vendor);
+    setSelectedVendor(vendor?.name || vendor || '');
   };
 
   const todayPlaceholder = new Date().toLocaleDateString();
@@ -203,7 +217,7 @@ const PurchaseInvoiceInfo = ({ scrollViewRef }) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -9,13 +9,28 @@ import {
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Contra Voucher Form
-const ContraVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
+const ContraVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Bank');
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
 
   // Inputs
   const [fromLedgerSearch, setFromLedgerSearch] = useState('');
   const [toLedgerSearch, setToLedgerSearch] = useState('');
+  const [amount, setAmount] = useState('');
+  const [narration, setNarration] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      if (!fromLedgerSearch || !toLedgerSearch || !amount) return null;
+      return {
+        fromLedger: fromLedgerSearch,
+        toLedger: toLedgerSearch,
+        amount: parseFloat(amount) || 0,
+        narration,
+        date: new Date().toISOString().slice(0, 10),
+      };
+    },
+  }));
 
   // Refs for input navigation
   const fromLedgerInputRef = useRef(null);
@@ -67,6 +82,8 @@ const ContraVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
             label="Amount"
             placeholder="Enter amount"
             keyboardType="numeric"
+            value={amount}
+            onChangeText={setAmount}
             inputRef={amountInputRef}
             nextInputRef={selectedPaymentMethod !== 'Cash' ? refNoInputRef : narrationInputRef}
             returnKeyType="next"
@@ -103,12 +120,14 @@ const ContraVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
         placeholder="Enter Notes"
         multiline
         style={{height: 80}}
+        value={narration}
+        onChangeText={setNarration}
         inputRef={narrationInputRef}
         returnKeyType="done"
         scrollViewRef={scrollViewRef}
       />
     </View>
   );
-};
+});
 
 export default ContraVoucherForm;

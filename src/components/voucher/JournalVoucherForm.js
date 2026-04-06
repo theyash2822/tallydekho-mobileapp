@@ -8,10 +8,25 @@ import {
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Journal Voucher Form
-const JournalVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
+const JournalVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
   // Inputs
   const [debitLedgerSearch, setDebitLedgerSearch] = useState('');
   const [creditLedgerSearch, setCreditLedgerSearch] = useState('');
+  const [amount, setAmount] = useState('');
+  const [narration, setNarration] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      if (!debitLedgerSearch || !creditLedgerSearch || !amount) return null;
+      return {
+        drLedger: debitLedgerSearch,
+        crLedger: creditLedgerSearch,
+        amount: parseFloat(amount) || 0,
+        narration,
+        date: new Date().toISOString().slice(0, 10),
+      };
+    },
+  }));
 
   // Refs for input navigation
   const debitLedgerInputRef = useRef(null);
@@ -56,6 +71,8 @@ const JournalVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
         label="Amount"
         placeholder="Enter amount"
         keyboardType="numeric"
+        value={amount}
+        onChangeText={setAmount}
         inputRef={amountInputRef}
         nextInputRef={narrationInputRef}
         returnKeyType="next"
@@ -68,12 +85,14 @@ const JournalVoucherForm = ({scrollViewRef, isKeyboardVisible}) => {
         placeholder="Enter Notes"
         multiline
         style={{height: 80}}
+        value={narration}
+        onChangeText={setNarration}
         inputRef={narrationInputRef}
         returnKeyType="done"
         scrollViewRef={scrollViewRef}
       />
     </View>
   );
-};
+});
 
 export default JournalVoucherForm;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ const ledgerOptions = [
   'Etc',
 ];
 
-const SalesInvoiceInfo = ({ scrollViewRef, customerRef }) => {
+const SalesInvoiceInfo = forwardRef(({ scrollViewRef, customerRef }, ref) => {
   const [ledger, setLedger] = useState('');
   const [ledgerDropdownVisible, setLedgerDropdownVisible] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState('');
@@ -63,6 +63,17 @@ const SalesInvoiceInfo = ({ scrollViewRef, customerRef }) => {
     setShowCalendar(false);
   };
 
+  useImperativeHandle(ref, () => ({
+    getFormData: () => ({
+      partyLedger: selectedCustomer,
+      salesLedger: ledger || 'Sales Accounts',
+      date: invoiceDate
+        ? invoiceDate.toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+      invoiceNumber,
+    }),
+  }));
+
   const handleVendorSaveAndUse = name => {
     setPeopleList(prevList =>
       prevList.includes(name) ? prevList : [name, ...prevList],
@@ -74,7 +85,10 @@ const SalesInvoiceInfo = ({ scrollViewRef, customerRef }) => {
     setTimeout(() => setConfirmationMessage(''), 3000);
   };
 
+  const [selectedCustomer, setSelectedCustomer] = useState('');
+
   const handleCustomerSelect = customer => {
+    setSelectedCustomer(customer?.name || customer || '');
   };
 
   return (
@@ -195,7 +209,7 @@ const SalesInvoiceInfo = ({ scrollViewRef, customerRef }) => {
       />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
