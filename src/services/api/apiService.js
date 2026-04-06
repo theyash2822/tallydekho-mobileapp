@@ -446,6 +446,28 @@ class ApiService {
     }
   }
 
+  // ==================== Ledger Drill-down APIs ====================
+
+  async fetchLedgerVouchers(body) {
+    try {
+      Logger.debug('Fetching ledger vouchers', {ledgerName: body?.ledgerName});
+      return await apiPost(API_ENDPOINTS.LEDGER_VOUCHERS, body, {deduplicate: true});
+    } catch (error) {
+      Logger.apiError('fetchLedgerVouchers', error, body);
+      throw error;
+    }
+  }
+
+  async fetchVoucherDetail(body) {
+    try {
+      Logger.debug('Fetching voucher detail', {voucherId: body?.voucherId});
+      return await apiPost(API_ENDPOINTS.VOUCHER_DETAIL, body, {cache: true, cacheTTL: 60000});
+    } catch (error) {
+      Logger.apiError('fetchVoucherDetail', error, body);
+      throw error;
+    }
+  }
+
   // ==================== Utility Methods ====================
 
   /**
@@ -536,6 +558,51 @@ class ApiService {
 // Export singleton instance
 const apiService = new ApiService();
 export default apiService;
+
+// ==================== Tally Write API ====================
+// Separate service for data entry — uses /tally/* routes (not /app/*)
+// These write data directly to Tally Prime via the desktop app proxy
+
+import {API_CONFIG} from './config';
+
+// Tally base URL strips the /app suffix
+const TALLY_BASE_URL = API_CONFIG.BASE_URL.replace('/app', '');
+
+async function tallyWrite(endpoint, body) {
+  const {AsyncStorage} = await import('@react-native-async-storage/async-storage');
+  const token = await AsyncStorage.getItem('authToken');
+  const response = await fetch(`${TALLY_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? {'Authorization': `Bearer ${token}`} : {}),
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
+  return data;
+}
+
+export const tallyWriteAPI = {
+  // Vouchers
+  createSalesInvoice:    (b) => tallyWrite('/tally/voucher/sales',         b),
+  createSalesOrder:      (b) => tallyWrite('/tally/voucher/sales-order',    b),
+  createPurchaseInvoice: (b) => tallyWrite('/tally/voucher/purchase',       b),
+  createPurchaseOrder:   (b) => tallyWrite('/tally/voucher/purchase-order', b),
+  createPayment:         (b) => tallyWrite('/tally/voucher/payment',        b),
+  createReceipt:         (b) => tallyWrite('/tally/voucher/receipt',        b),
+  createJournal:         (b) => tallyWrite('/tally/voucher/journal',        b),
+  createContra:          (b) => tallyWrite('/tally/voucher/contra',         b),
+  createCreditNote:      (b) => tallyWrite('/tally/voucher/credit-note',    b),
+  createDebitNote:       (b) => tallyWrite('/tally/voucher/debit-note',     b),
+  createDeliveryNote:    (b) => tallyWrite('/tally/voucher/delivery-note',  b),
+  cancelVoucher:         (b) => tallyWrite('/tally/voucher/cancel',         b),
+  // Masters
+  createParty:           (b) => tallyWrite('/tally/master/party',           b),
+  createWarehouse:       (b) => tallyWrite('/tally/master/warehouse',       b),
+  createStockItem:       (b) => tallyWrite('/tally/master/stock-item',      b),
+};
 
 // Export class for testing
 export {ApiService};

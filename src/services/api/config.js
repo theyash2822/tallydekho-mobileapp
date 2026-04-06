@@ -67,6 +67,10 @@ export const API_ENDPOINTS = {
   STOCK_FILTERS: '/stock-filters',
   STOCKS: '/stocks',
   STOCK: '/stock',
+
+  // Ledger drill-down
+  LEDGER_VOUCHERS: '/ledger-vouchers',
+  VOUCHER_DETAIL: '/voucher-detail',
 };
 
 // HTTP Status Codes
