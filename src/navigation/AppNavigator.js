@@ -24,6 +24,13 @@ import ContraVoucher from '../pages/Vouchers/ContraVoucher';
 import JournalVoucher from '../pages/Vouchers/JournalVoucher';
 import SaleOrders from '../pages/Order/SalesOrders';
 import PurchaseOrders from '../pages/Order/PurchaseOrders';
+import SalesOrderForm from '../pages/forms/SalesOrderForm';
+import PurchaseOrderForm from '../pages/forms/PurchaseOrderForm';
+import CreditNoteForm from '../pages/forms/CreditNoteForm';
+import DebitNoteForm from '../pages/forms/DebitNoteForm';
+import DeliveryNoteForm from '../pages/forms/DeliveryNoteForm';
+import CreatePartyForm from '../pages/forms/CreatePartyForm';
+import CreateStockForm from '../pages/forms/CreateStockForm';
 import { LedgerDetails } from '../components/ledger';
 import Receivables from '../pages/SwipableCardsScreens/Receivables';
 import Payables from '../pages/SwipableCardsScreens/Payables';
@@ -155,6 +162,15 @@ export default function AppNavigator({ initialRoute }) {
       {/* ===== ORDERS ===== */}
       <Stack.Screen name="salesOrders" component={SaleOrders} />
       <Stack.Screen name="purchaseOrders" component={PurchaseOrders} />
+      <Stack.Screen name="createSalesOrder" component={SalesOrderForm} />
+      <Stack.Screen name="createPurchaseOrder" component={PurchaseOrderForm} />
+
+      {/* ===== TALLY DATA ENTRY FORMS ===== */}
+      <Stack.Screen name="createCreditNote" component={CreditNoteForm} />
+      <Stack.Screen name="createDebitNote" component={DebitNoteForm} />
+      <Stack.Screen name="createDeliveryNote" component={DeliveryNoteForm} />
+      <Stack.Screen name="createParty" component={CreatePartyForm} />
+      <Stack.Screen name="createStockItem" component={CreateStockForm} />
 
       {/* ===== FINANCIAL MANAGEMENT ===== */}
       <Stack.Screen name="ledgerDetails" component={LedgerDetails} />

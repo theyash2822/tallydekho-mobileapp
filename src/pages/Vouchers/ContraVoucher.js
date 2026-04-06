@@ -33,8 +33,7 @@ const ContraVoucher = ({navigation}) => {
         isOptional,
       });
       if (result?.status) {
-        const num = result?.data && typeof result.data === 'string'
-          ? (result.data.match(/<VOUCHERNUMBER>(.*?)<\/VOUCHERNUMBER>/i)?.[1] || '') : '';
+        const num = result?.voucherNumber || '';
         Alert.alert(
           isOptional ? 'Optional Entry Saved' : 'Contra Entry Created in Tally',
           `${num ? `Voucher: ${num}\n` : ''}₹${parseFloat(formData.amount).toLocaleString('en-IN')}`,

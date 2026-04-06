@@ -42,6 +42,50 @@ const PaymentVoucher = ({navigation}) => {
       });
 
       if (result?.status) {
+        const num = result?.voucherNumber || '';
+import {ScrollView, View, StyleSheet, Platform, Alert, ActivityIndicator} from 'react-native';
+import Header from '../../components/common/Header';
+import VoucherInfo from '../../components/voucher/VoucherInfo';
+import PaymentVoucherForm from '../../components/voucher/PaymentVoucherForm';
+import BottomArea from '../../components/common/BottomArea';
+import {commonScreenStyles} from '../Invoice/ScreenStyles';
+import useKeyboardVisibility from '../../hooks/useKeyboardVisibility';
+import {tallyWriteAPI} from '../../services/api/apiService';
+import {useAuth} from '../../context/AuthContext';
+
+const PaymentVoucher = ({navigation}) => {
+  const scrollViewRef = useRef(null);
+  const formRef = useRef(null);
+  const isKeyboardVisible = useKeyboardVisibility();
+  const [submitting, setSubmitting] = useState(false);
+  const {selectedCompany} = useAuth();
+
+  const handleSubmit = async (isOptional = false) => {
+    const formData = formRef.current?.getFormData?.();
+    if (!formData) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+    if (!selectedCompany) {
+      Alert.alert('Error', 'No company selected');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await tallyWriteAPI.createPayment({
+        companyGuid: selectedCompany.guid || selectedCompany.id,
+        companyName: selectedCompany.name,
+        date: formData.date?.replace(/-/g, '') || new Date().toISOString().slice(0,10).replace(/-/g,''),
+        partyLedger: formData.partyLedger,
+        bankLedger: formData.bankLedger,
+        amount: formData.amount,
+        narration: formData.narration || '',
+        reference: formData.reference || '',
+        isOptional,
+      });
+
+      if (result?.status) {
         const num = result?.data && typeof result.data === 'string'
           ? (result.data.match(/<VOUCHERNUMBER>(.*?)<\/VOUCHERNUMBER>/i)?.[1] || '')
           : '';

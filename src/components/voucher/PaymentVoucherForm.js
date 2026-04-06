@@ -147,12 +147,11 @@ const PaymentVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
         placeholder="Enter Notes"
         multiline
         style={{height: 80}}
+        value={narration}
+        onChangeText={setNarration}
         inputRef={narrationInputRef}
         returnKeyType="done"
         scrollViewRef={scrollViewRef}
-        onSubmitEditing={() => {
-          // Keyboard will be dismissed in handleSubmit
-        }}
       />
     </View>
   );
