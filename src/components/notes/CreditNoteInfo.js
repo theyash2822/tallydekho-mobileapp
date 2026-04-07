@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, forwardRef, useImperativeHandle} from 'react';
 import {
   View,
   Text,
@@ -19,8 +19,20 @@ import ToolTip from '../Sales-purchaseInvoice/ToolTip';
 import SearchCustomer from '../common/SearchCustomer';
 import SearchReferenceDropdown from './ReferenceSearch';
 
-const CreditNoteInfo = ({scrollViewRef, products, setProducts, logistics, setLogistics}) => {
+const CreditNoteInfo = forwardRef(({scrollViewRef, products, setProducts, logistics, setLogistics}, ref) => {
   const [debitNoteNumber, setDebitNoteNumber] = useState('');
+  const [selectedParty, setSelectedParty] = useState('');
+  const [narrationText, setNarrationText] = useState('');
+  const [referenceText, setReferenceText] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => ({
+      partyLedger: selectedParty,
+      narration: narrationText,
+      reference: referenceText,
+      amount: 0, // calculated from products in parent
+    }),
+  }));
   const [showVendorModal, setShowVendorModal] = useState(false);
   const [selectedDateField, setSelectedDateField] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -124,7 +136,7 @@ const CreditNoteInfo = ({scrollViewRef, products, setProducts, logistics, setLog
 
       <SearchCustomer
         peopleList={peopleList}
-        onCustomerSelect={customer => console.log('Selected:', customer)}
+        onCustomerSelect={customer => setSelectedParty(customer?.name || customer || '')}
         vendorModalHeader="Add New Customer"
         enableAddCustomer={false}
         scrollViewRef={scrollViewRef}
@@ -252,6 +264,8 @@ const styles = StyleSheet.create({
   section: {
     marginTop: 12,
   },
+});
+
 });
 
 export default CreditNoteInfo;

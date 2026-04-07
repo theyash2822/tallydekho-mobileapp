@@ -65,7 +65,7 @@ const PurchaseOrders = ({navigation, route}) => {
       <BottomArea
         buttonText="Submit Invoice"
         showSecondButton={false}
-        onPress={() => console.log('Submitted only')}
+        onPress={() => { const {Alert} = require('react-native'); Alert.alert('Info', 'Desktop App must be paired to submit'); }}
       />
     </View>
   );

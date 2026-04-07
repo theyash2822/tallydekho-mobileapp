@@ -58,7 +58,7 @@ const DeliveryNote = ({ navigation }) => {
       <BottomArea
         buttonText="Submit Delivery Note"
         secondButtonText='Submit & Share PDF'
-        onPress={() => console.log('Delivery Note submitted')}
+        onPress={() => Alert.alert('Info', 'Please pair Desktop App to submit')}
       />
     </View>
   );

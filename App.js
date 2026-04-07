@@ -10,12 +10,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AppNavigator from './src/navigation/AppNavigator';
+import {navigationRef} from './src/navigation/navigationRef';
 import {AuthProvider} from './src/context/AuthContext';
-import {FilterProvider} from './src/contexts/FilterContext';
+import {FilterProvider} from './src/context/FilterContext';
 import NoInternetOverlay from './src/utils/NoInternet';
 import LockScreen from './src/components/security/LockScreen';
 import screenLockService from './src/services/security/screenLockService';
-// import {WebSocketProvider} from './src/context/WebSocketProvider';
+
 
 /* =====================================================
    🔒 Disable system font scaling globally
@@ -163,14 +164,13 @@ export default function App() {
   return (
     <AuthProvider>
       <FilterProvider>
-        {/* <WebSocketProvider> */}
         <SafeAreaProvider>
           <SafeAreaView edges={['top']} style={{flex: 1}}>
             {isLocked ? (
               <LockScreen onUnlock={handleUnlock} />
             ) : (
               <>
-                <NavigationContainer>
+                <NavigationContainer ref={navigationRef}>
                   <AppNavigator initialRoute={initialRoute} />
                 </NavigationContainer>
                 <Toast />
@@ -178,7 +178,6 @@ export default function App() {
             )}
           </SafeAreaView>
         </SafeAreaProvider>
-        {/* </WebSocketProvider> */}
         {/* Show NoInternetOverlay as overlay when internet is disconnected, but keep NavigationContainer mounted */}
         {isConnected === false && (
           <NoInternetOverlay onRetry={handleRetry} />

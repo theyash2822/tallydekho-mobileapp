@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, forwardRef, useImperativeHandle} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import ToolTip from '../Sales-purchaseInvoice/ToolTip';
 import SearchCustomer from '../common/SearchCustomer';
 import SearchReferenceDropdown from './ReferenceSearch';
 
-const DebitNoteInfo = ({scrollViewRef, products, setProducts, logistics, setLogistics}) => {
+const ___COMP = forwardRef(({DebitNoteInfo = forwardRef(({scrollViewRef, products, setProducts, logistics, setLogistics}) => {
   const [debitNoteNumber, setDebitNoteNumber] = useState('');
   const [showVendorModal, setShowVendorModal] = useState(false);
   const [selectedDateField, setSelectedDateField] = useState(null);

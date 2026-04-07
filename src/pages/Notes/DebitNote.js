@@ -1,4 +1,10 @@
 import React, {useRef, useState} from 'react';
+import {ScrollView, View, StyleSheet, Platform, Alert} from 'react-native';
+import {tallyWriteAPI} from '../../services/api/apiService';
+import {useAuth} from '../../context/AuthContext';
+
+
+import {useAuth} from '../../context/AuthContext';
 import {ScrollView, View, StyleSheet, Platform} from 'react-native';
 import Header from '../../components/common/Header';
 import Summary from '../../components/Sales-purchaseInvoice/Summary';
@@ -59,7 +65,7 @@ const DebitNote = ({navigation}) => {
         </View>
         <View style={commonScreenStyles.bottomSpacer} />
       </ScrollView>
-      <BottomArea buttonText='Submit Debit Note' secondButtonText='Submit & Share PDF' />
+      <BottomArea buttonText="Submit Debit Note" showSecondButton={true} secondButtonText="Save as Optional" onPress={() => Alert.alert('Info', 'Please pair Desktop App to submit')} onSecondPress={() => Alert.alert('Info', 'Please pair Desktop App to submit')} />
     </View>
   );
 };

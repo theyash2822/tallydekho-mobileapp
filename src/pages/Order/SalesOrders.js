@@ -62,7 +62,7 @@ const SaleOrders = ({navigation}) => {
       <BottomArea
         buttonText="Submit Sales Order"
         showSecondButton={false}
-        onPress={() => console.log('Submitted only')}
+        onPress={() => { const {Alert} = require('react-native'); Alert.alert('Info', 'Desktop App must be paired to submit'); }}
       />
     </View>
   );

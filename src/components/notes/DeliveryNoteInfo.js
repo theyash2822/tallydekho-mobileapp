@@ -19,7 +19,7 @@ import AddDispatchSection from './AddDispatchSection';
 import ToolTip from '../Sales-purchaseInvoice/ToolTip';
 import SearchCustomer from '../common/SearchCustomer';
 
-const DeliveryNoteInfo = ({ scrollViewRef, onDispatchDropdownToggle, dispatchItems, setDispatchItems }) => {
+const ___COMP = forwardRef(({DeliveryNoteInfo = forwardRef(({ scrollViewRef, onDispatchDropdownToggle, dispatchItems, setDispatchItems }) => {
   const [deliveryNoteNumber, setDeliveryNoteNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchDocumentQuery, setSearchDocumentQuery] = useState('');

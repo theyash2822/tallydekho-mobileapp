@@ -1,60 +1,73 @@
+/**
+ * TallyDekho Design System — Mobile
+ *
+ * Base: Pure black (#000000) and white (#FFFFFF)
+ * Grays: True neutral grayscale — no warm tints
+ * Accent: Single teal, used only for functional states
+ * Semantic: Error / warning / success for data only
+ */
+
 const Colors = {
-  // primary: '#3498db',
-  // secondary: '#2ecc71',
-  // accent: '#e67e22',
+  // ─── Base ─────────────────────────────────────────────────────────────────
+  white:          '#FFFFFF',
+  black:          '#000000',
 
-  // text: '#333333',
-  // textLight: '#777777',
+  // ─── Surface (backgrounds) ────────────────────────────────────────────────
+  bgPrimary:      '#FFFFFF',           // main screen background — pure white
+  bgSecondary:    '#F5F5F5',           // cards, sheets — light gray
+  bgTertiary:     '#EBEBEB',           // hover, pressed, chip background
+  bgInverse:      '#111111',           // dark surfaces — near black
 
-  // error: '#e74c3c',
-  // success: '#2ecc71',
-  // warning: '#f1c40f',
-  // info: '#3498db',
-  // transparent: 'transparent',
+  // ─── Text ─────────────────────────────────────────────────────────────────
+  textPrimary:    '#000000',           // headings, primary data
+  textSecondary:  '#555555',           // labels, subtext
+  textTertiary:   '#999999',           // placeholder, disabled, hints
+  textInverse:    '#FFFFFF',           // text on dark surfaces
 
-  // Common
-  IconColor: '#898E9A',
-  white: '#FFF',
-  black: '#000',
+  // Aliases (backward compat)
+  primaryText:    '#000000',
+  secondaryText:  '#555555',
+  primaryTitle:   '#000000',
+  placeholder:    '#999999',
 
-  // Borders
-  border: '#F0EFF4',
+  // ─── Border ───────────────────────────────────────────────────────────────
+  border:         '#E0E0E0',           // default — inputs, cards
+  borderStrong:   '#BBBBBB',           // focused, emphasized
+  borderSubtle:   '#F0F0F0',           // inner dividers
 
-  //Text
-  primaryText: '#1F1F1F', // Black
-  secondaryText: '#8F939E', // Light
+  // ─── Brand Accent ─────────────────────────────────────────────────────────
+  // Used sparingly: CTA buttons, active tab indicator, key highlights
+  primary:        '#059669',
+  primaryLight:   '#D1FAE5',
+  primaryDark:    '#047857',
 
-  primaryTitle: '#494D58',
+  // ─── Semantic (data states only — never decorative) ───────────────────────
+  success:        '#059669',
+  successBg:      '#D1FAE5',
+  error:          '#DC2626',
+  errorBg:        '#FEE2E2',
+  warning:        '#D97706',
+  warningBg:      '#FEF3C7',
+  info:           '#2563EB',
+  infoBg:         '#DBEAFE',
 
-  //BackgroundColor
-  backgroundColorPrimary: '#F6F8FA',
+  // ─── Icons ────────────────────────────────────────────────────────────────
+  IconColor:      '#999999',           // inactive icons
+  IconActive:     '#000000',           // active / selected icons
 
-  // Primary color for focus states
-  primary: '#07624c',
-
-  // Placeholder text color
-  placeholder: '#8F939E',
+  // ─── Legacy aliases ───────────────────────────────────────────────────────
+  backgroundColorPrimary: '#FFFFFF',
 };
 
 /**
- * Cross-platform shadow utility
- * @param {number} elevation - Android elevation (0-24)
- * @param {object} options - iOS shadow options
- * @param {string} options.shadowColor - Shadow color (default: '#000')
- * @param {number} options.shadowOpacity - Shadow opacity 0-1 (default: 0.1)
- * @param {number} options.shadowRadius - Shadow blur radius (default: elevation * 0.5)
- * @param {object} options.shadowOffset - Shadow offset {width, height} (default: {width: 0, height: elevation * 0.5})
- * @returns {object} Style object with elevation and shadow properties
+ * Shadow utility — clean, minimal
  */
-export const getShadowStyle = (
-  elevation = 4,
-  options = {},
-) => {
+export const getShadowStyle = (elevation = 4, options = {}) => {
   const {
-    shadowColor = '#000',
-    shadowOpacity = 0.1,
-    shadowRadius = elevation * 0.5,
-    shadowOffset = {width: 0, height: elevation * 0.5},
+    shadowColor   = '#000000',
+    shadowOpacity = 0.08,
+    shadowRadius  = elevation * 0.5,
+    shadowOffset  = {width: 0, height: elevation * 0.4},
   } = options;
 
   return {

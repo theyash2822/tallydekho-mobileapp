@@ -1,4 +1,7 @@
 import React, {useRef, useState} from 'react';
+import {Alert} from 'react-native';
+import {tallyWriteAPI} from '../../services/api/apiService';
+import {useAuth} from '../../context/AuthContext';
 import {ScrollView, View, StyleSheet, Platform} from 'react-native';
 import Header from '../../components/common/Header';
 import Summary from '../../components/Sales-purchaseInvoice/Summary';
@@ -9,6 +12,33 @@ import useKeyboardVisibility from '../../hooks/useKeyboardVisibility';
 
 const CreditNote = ({navigation}) => {
   const scrollViewRef = useRef(null);
+  const infoRef = useRef(null);
+  const [submitting, setSubmitting] = useState(false);
+  const {selectedCompany} = useAuth();
+
+  const handleSubmit = async (isOptional = false) => {
+    const data = infoRef.current?.getFormData?.() || {};
+    const party = data.partyLedger || '';
+    if (!party) { Alert.alert('Error', 'Please select a party'); return; }
+    if (!selectedCompany) { Alert.alert('Error', 'No company selected'); return; }
+    setSubmitting(true);
+    try {
+      const result = await tallyWriteAPI.createCreditNote({
+        companyGuid: selectedCompany.guid || selectedCompany.id,
+        companyName: selectedCompany.name,
+        date: new Date().toISOString().slice(0,10).replace(/-/g,''),
+        partyLedger: party,
+        amount: data.amount || 0,
+        narration: data.narration || '',
+        reference: data.reference || '',
+        isOptional,
+      });
+      if (result?.status) {
+        Alert.alert('Credit Note Created!', result.voucherNumber ? 'Voucher: ' + result.voucherNumber : 'Posted to Tally', [{text:'OK', onPress:()=>navigation.goBack()}]);
+      } else { Alert.alert('Error', result?.message || 'Failed'); }
+    } catch(e) { Alert.alert('Error', e.message); }
+    finally { setSubmitting(false); }
+  };
   const summaryRef = useRef(null);
   const isKeyboardVisible = useKeyboardVisibility();
   const [products, setProducts] = useState([]);
@@ -42,7 +72,7 @@ const CreditNote = ({navigation}) => {
         ]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive">
-        <CreditNoteInfo 
+        <CreditNoteInfo ref={infoRef} 
           scrollViewRef={scrollViewRef} 
           products={products}
           setProducts={setProducts}
@@ -59,7 +89,7 @@ const CreditNote = ({navigation}) => {
         </View>
         <View style={commonScreenStyles.bottomSpacer} />
       </ScrollView>
-      <BottomArea />
+      <BottomArea buttonText={submitting ? 'Submitting...' : 'Submit Credit Note'} showSecondButton={true} secondButtonText="Save as Optional" onPress={() => !submitting && handleSubmit(false)} onSecondPress={() => !submitting && handleSubmit(true)} />
     </View>
   );
 };
