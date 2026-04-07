@@ -19,6 +19,8 @@ import ErrorBoundary from '../components/common/ErrorBoundary';
 import TopSection from '../components/dashboard/common/TopSection';
 import MainContent from '../components/dashboard/common/MainContent';
 import {filterDataByStatusAndPeriod} from '../components/Helper/DateFilterHelper';
+import apiService from '../services/api/apiService';
+import {useAuth} from '../hooks/useAuth';
 import {Icons} from '../utils/Icons';
 import ScreenStyles from '../components/dashboard/css/ScreenStyles';
 import { FinancialMetricsSection } from '../components/financial';
@@ -31,6 +33,31 @@ const PurchasesScreen = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [activeTab, setActiveTab] = useState('recent');
+  const [apiVouchers, setApiVouchers] = useState([]);
+  const [apiTopVendors, setApiTopVendors] = useState([]);
+  const {selectedGuid, selectedFY} = useAuth();
+
+  useEffect(() => {
+    if (!selectedGuid) return;
+    const body = { companyGuid: selectedGuid, voucherType: 'Purchase GST', page: 1, pageSize: 50, fromDate: selectedFY?.startDate, toDate: selectedFY?.endDate };
+    apiService.fetchVouchers(body).then(res => {
+      const vouchers = res?.data?.vouchers || [];
+      const mapped = vouchers.map(v => ({
+        id: v.id, status: 'Paid', reference: v.voucher_number || v.id,
+        vendor: v.party_name || '—',
+        date: v.date ? new Date(v.date).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '',
+        fullDate: v.date || '', amount: '₹' + Math.round(v.amount||0).toLocaleString('en-IN'), isPaid: true,
+      }));
+      setApiVouchers(mapped);
+      const vMap = {};
+      vouchers.forEach(v => {
+        if (!v.party_name) return;
+        if (!vMap[v.party_name]) vMap[v.party_name] = { vendor: v.party_name, total: 0, count: 0, initial: v.party_name[0].toUpperCase(), color: '#526373' };
+        vMap[v.party_name].total += (v.amount||0); vMap[v.party_name].count++;
+      });
+      setApiTopVendors(Object.values(vMap).sort((a,b)=>b.total-a.total).slice(0,10).map(p => ({ ...p, totalAmount: '₹'+Math.round(p.total).toLocaleString('en-IN'), transactionCount: p.count })));
+    }).catch(()=>{});
+  }, [selectedGuid, selectedFY?.uniqueId]);
 
   // Handle back button press safely
   useFocusEffect(
@@ -268,8 +295,9 @@ const PurchasesScreen = () => {
     // Handle card press if needed
     console.log('Card pressed:', card.title);
   };
+  const sourceData = apiVouchers.length > 0 ? apiVouchers : recentPurchases;
   const filteredRecentPurchases = filterDataByStatusAndPeriod(
-    recentPurchases,
+    sourceData,
     selectedStatus,
     selectedPeriod,
     'date',
@@ -376,7 +404,7 @@ const PurchasesScreen = () => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             recentData={filteredRecentPurchases}
-            topData={topVendors}
+            topData={apiTopVendors.length > 0 ? apiTopVendors : topVendors}
             renderTransactionItem={renderTransactionItem}
             renderTopItem={renderVendorItem}
             tab1Name="Recent Purchases"

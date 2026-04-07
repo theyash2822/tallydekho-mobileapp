@@ -1,6 +1,8 @@
 // import React from 'react';
 // import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 // import {useNavigation} from '@react-navigation/native';
+import apiService from '../../services/api/apiService';
+import {useAuth} from '../../hooks/useAuth';
 // import Feather from 'react-native-vector-icons/Feather';
 // import Colors from '../../utils/Colors';
 // import {Icons} from '../../utils/Icons';
@@ -204,7 +206,7 @@
 
 // export default FinancialMetricsCards;
 
-import React, {useRef} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -215,7 +217,28 @@ const FinancialMetricsCards = ({onCardPress, selectedRange}) => {
   const navigation = useNavigation();
   const isNavigatingRef = useRef(false);
 
-  // Static Demo Data Based on Selected Range
+  const {selectedGuid, selectedFY} = useAuth();
+  const [dashData, setDashData] = useState(null);
+
+  // Fetch real dashboard data from Tally
+  useEffect(() => {
+    if (!selectedGuid) return;
+    const body = { companyGuid: selectedGuid, fromDate: selectedFY?.startDate, toDate: selectedFY?.endDate };
+    apiService.fetchDashboard(body).then(res => {
+      if (res?.data) setDashData(res.data);
+    }).catch(() => {});
+  }, [selectedGuid, selectedFY?.uniqueId]);
+
+  const fmtK = n => n >= 100000 ? '₹' + (n/100000).toFixed(1) + 'L' : n >= 1000 ? '₹' + (n/1000).toFixed(1) + 'K' : '₹' + Math.round(n||0);
+
+  // Real metrics override static when available
+  const realMetrics = dashData ? [
+    { id: 1, title: 'Sales', value: fmtK(dashData.totalSales||0), percentage: dashData.totalSales > 0 ? '+live' : '—', screen: 'sales', icon: Icons.GraphUp, iconColor: '#6F7C97', backgroundColor: '#fff' },
+    { id: 2, title: 'Purchases', value: fmtK(dashData.totalPurchase||0), percentage: dashData.totalPurchase > 0 ? '+live' : '—', screen: 'purchases', icon: Icons.Purchases, iconColor: '#6F7C97', backgroundColor: '#fff' },
+    { id: 3, title: 'Expenses', value: fmtK((dashData.totalPayments||0)), percentage: '—', screen: 'expenses', icon: 'arrow-up-right', iconColor: '#6F7C97', backgroundColor: '#fff' },
+  ] : null;
+
+    // Static Demo Data Based on Selected Range
   const metricsData = {
     '7D': [
       {
@@ -348,7 +371,7 @@ const FinancialMetricsCards = ({onCardPress, selectedRange}) => {
   };
 
   // Pick correct metrics based on selectedRange
-  const metrics = metricsData[selectedRange] || metricsData['7D'];
+  const metrics = realMetrics || metricsData[selectedRange] || metricsData['7D'];
   const handleCardPress = metric => {
     // Prevent multiple simultaneous navigations
     if (isNavigatingRef.current) {

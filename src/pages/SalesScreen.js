@@ -20,6 +20,8 @@ import TopSection from '../components/dashboard/common/TopSection';
 import MainContent from '../components/dashboard/common/MainContent';
 import AlertSwipeableCards from '../components/common/AlertSwipeableCards';
 import {filterDataByStatusAndPeriod} from '../components/Helper/DateFilterHelper';
+import apiService from '../services/api/apiService';
+import {useAuth} from '../hooks/useAuth';
 import {Icons} from '../utils/Icons';
 import EwayBill from '../assets/icons/ewaybill.svg';
 import ScreenStyles from '../components/dashboard/css/ScreenStyles';
@@ -33,6 +35,50 @@ const SalesScreen = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [activeTab, setActiveTab] = useState('recent');
+  const [loading, setLoading] = useState(false);
+  const [apiVouchers, setApiVouchers] = useState([]);
+  const [apiTopParties, setApiTopParties] = useState([]);
+  const {selectedGuid, selectedFY} = useAuth();
+
+  // Fetch real sales vouchers from Tally
+  useEffect(() => {
+    if (!selectedGuid) return;
+    setLoading(true);
+    const body = {
+      companyGuid: selectedGuid,
+      voucherType: 'Sales GST',
+      page: 1, pageSize: 50,
+      fromDate: selectedFY?.startDate,
+      toDate: selectedFY?.endDate,
+    };
+    apiService.fetchVouchers(body).then(res => {
+      const vouchers = res?.data?.vouchers || [];
+      // Map to screen format
+      const mapped = vouchers.map(v => ({
+        id: v.id,
+        status: v.amount > 0 ? 'Paid' : 'Unpaid',
+        reference: v.voucher_number || v.id,
+        customer: v.party_name || '—',
+        date: v.date ? new Date(v.date).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '',
+        fullDate: v.date || '',
+        amount: '₹' + Math.round(v.amount || 0).toLocaleString('en-IN'),
+        isPaid: (v.amount || 0) > 0,
+      }));
+      setApiVouchers(mapped);
+      // Compute top parties
+      const partyMap = {};
+      vouchers.forEach(v => {
+        if (!v.party_name) return;
+        if (!partyMap[v.party_name]) partyMap[v.party_name] = { customer: v.party_name, total: 0, count: 0, initial: v.party_name[0].toUpperCase(), color: '#3F5263' };
+        partyMap[v.party_name].total += (v.amount || 0);
+        partyMap[v.party_name].count++;
+      });
+      const top = Object.values(partyMap).sort((a,b) => b.total - a.total).slice(0,10).map(p => ({
+        ...p, totalAmount: '₹' + Math.round(p.total).toLocaleString('en-IN'), transactionCount: p.count,
+      }));
+      setApiTopParties(top);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, [selectedGuid, selectedFY?.uniqueId]);
 
   // Handle back button press safely
   useFocusEffect(
@@ -280,8 +326,10 @@ const SalesScreen = () => {
   ];
 
   // Filter recent sales based on selected status and period
+  // Use real API data if available, fall back to mock
+  const sourceData = apiVouchers.length > 0 ? apiVouchers : recentSales;
   const filteredRecentSales = filterDataByStatusAndPeriod(
-    recentSales,
+    sourceData,
     selectedStatus,
     selectedPeriod,
     'date',
@@ -382,7 +430,7 @@ const SalesScreen = () => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             recentData={filteredRecentSales}
-            topData={topParties}
+            topData={apiTopParties.length > 0 ? apiTopParties : topParties}
             renderTransactionItem={renderTransactionItem}
             renderTopItem={renderPartyItem}
             tab1Name="Recent Sales"
