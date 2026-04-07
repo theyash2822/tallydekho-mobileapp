@@ -218,16 +218,25 @@ const AuthProvider = ({children}) => {
       // Navigation will be handled by the WebSocket service alert
     };
 
+    // Handle 'paired' event - mobile just paired, refresh companies with real data
+    const handlePaired = async payload => {
+      Logger.info('[AuthContext] Paired event received - refreshing companies', payload);
+      await AsyncStorage.setItem('isPaired', 'true');
+      await fetchCompaniesData({force: true});
+    };
+
     // Register event listeners
     wsService.on('synced', handleSynced);
     wsService.on('unpaired', handleUnpaired);
     wsService.on('logout', handleLogout);
+    wsService.on('paired', handlePaired);
 
     // Cleanup listeners on unmount
     return () => {
       wsService.off('synced', handleSynced);
       wsService.off('unpaired', handleUnpaired);
       wsService.off('logout', handleLogout);
+      wsService.off('paired', handlePaired);
     };
   }, [fetchCompaniesData]);
 
