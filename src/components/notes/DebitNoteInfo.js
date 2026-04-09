@@ -19,7 +19,8 @@ import ToolTip from '../Sales-purchaseInvoice/ToolTip';
 import SearchCustomer from '../common/SearchCustomer';
 import SearchReferenceDropdown from './ReferenceSearch';
 
-const ___COMP = forwardRef(({DebitNoteInfo = forwardRef(({scrollViewRef, products, setProducts, logistics, setLogistics}) => {
+const DebitNoteInfo = forwardRef(
+  ({scrollViewRef, products, setProducts, logistics, setLogistics}, ref) => {
   const [debitNoteNumber, setDebitNoteNumber] = useState('');
   const [showVendorModal, setShowVendorModal] = useState(false);
   const [selectedDateField, setSelectedDateField] = useState(null);
@@ -185,7 +186,8 @@ const ___COMP = forwardRef(({DebitNoteInfo = forwardRef(({scrollViewRef, product
       )}
     </View>
   );
-};
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

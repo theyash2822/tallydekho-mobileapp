@@ -4,14 +4,18 @@ import {
   SearchableDropdown,
   LabeledInput,
   PaymentMethodDropdown,
-  dummyParties,
-  dummyInvoices,
-  dummyBanks,
+  EMPTY_OPTIONS,
 } from './shared/VoucherComponents';
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Receipt Voucher Form
-const ReceiptVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
+const ReceiptVoucherForm = forwardRef(({
+  scrollViewRef,
+  isKeyboardVisible,
+  partyOptions = EMPTY_OPTIONS,
+  invoiceOptions = EMPTY_OPTIONS,
+  bankOptions = EMPTY_OPTIONS,
+}, ref) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Bank');
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
 
@@ -63,7 +67,7 @@ const ReceiptVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
         placeholder="Search Name"
         value={partySearch}
         onChange={setPartySearch}
-        data={dummyParties}
+        data={partyOptions}
         scrollViewRef={scrollViewRef}
         inputRef={partyInputRef}
         nextInputRef={invoiceInputRef}
@@ -75,7 +79,7 @@ const ReceiptVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
         placeholder="Search Invoice"
         value={invoiceSearch}
         onChange={setInvoiceSearch}
-        data={dummyInvoices}
+        data={invoiceOptions}
         scrollViewRef={scrollViewRef}
         inputRef={invoiceInputRef}
         nextInputRef={amountInputRef}
@@ -122,7 +126,7 @@ const ReceiptVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
             placeholder="Search Bank"
             value={bankSearch}
             onChange={setBankSearch}
-            data={dummyBanks}
+            data={bankOptions}
             scrollViewRef={scrollViewRef}
             inputRef={bankInputRef}
             nextInputRef={refNoInputRef}

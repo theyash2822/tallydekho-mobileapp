@@ -62,11 +62,13 @@ const ScreenStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
+    flex: 1,
   },
   transactionName: {
     fontSize: 14,
     fontWeight: '600',
     color: '#111827',
+    flexShrink: 1,
   },
   transactionDate: {
     fontSize: 12,
@@ -85,6 +87,7 @@ const ScreenStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     color: '#6B7280',
+    flexShrink: 1,
   },
 
   // Common party/vendor/category card styles

@@ -3,12 +3,16 @@ import {View, Text} from 'react-native';
 import {
   SearchableDropdown,
   LabeledInput,
-  dummyLedgerstwo,
+  EMPTY_OPTIONS,
 } from './shared/VoucherComponents';
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Journal Voucher Form
-const JournalVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
+const JournalVoucherForm = forwardRef(({
+  scrollViewRef,
+  isKeyboardVisible,
+  ledgerOptions = EMPTY_OPTIONS,
+}, ref) => {
   // Inputs
   const [debitLedgerSearch, setDebitLedgerSearch] = useState('');
   const [creditLedgerSearch, setCreditLedgerSearch] = useState('');
@@ -48,7 +52,7 @@ const JournalVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
         placeholder="Search Ledger"
         value={debitLedgerSearch}
         onChange={setDebitLedgerSearch}
-        data={dummyLedgerstwo}
+        data={ledgerOptions}
         scrollViewRef={scrollViewRef}
         inputRef={debitLedgerInputRef}
         nextInputRef={creditLedgerInputRef}
@@ -60,7 +64,7 @@ const JournalVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) 
         placeholder="Search Ledger"
         value={creditLedgerSearch}
         onChange={setCreditLedgerSearch}
-        data={dummyLedgerstwo}
+        data={ledgerOptions}
         scrollViewRef={scrollViewRef}
         inputRef={creditLedgerInputRef}
         nextInputRef={amountInputRef}

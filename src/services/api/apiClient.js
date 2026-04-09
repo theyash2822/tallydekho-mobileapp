@@ -11,6 +11,41 @@ import {Logger} from '../utils/logger';
 const requestCache = new Map();
 const pendingRequests = new Map();
 
+const maskSensitiveHeaders = headers => {
+  if (!headers) return {};
+  const plainHeaders =
+    typeof headers.toJSON === 'function' ? headers.toJSON() : {...headers};
+  const masked = {...plainHeaders};
+  const authKey = Object.keys(masked).find(
+    key => key.toLowerCase() === 'authorization',
+  );
+  if (authKey && typeof masked[authKey] === 'string') {
+    masked[authKey] = `${masked[authKey].slice(0, 12)}...`;
+  }
+  return masked;
+};
+
+const getFullUrl = config => {
+  const base = (config?.baseURL || API_CONFIG.BASE_URL || '').replace(/\/$/, '');
+  const path = (config?.url || '').startsWith('/')
+    ? config.url
+    : `/${config?.url || ''}`;
+  const fullPath = `${base}${path}`;
+  const params = config?.params;
+
+  if (!params || typeof params !== 'object' || Array.isArray(params)) {
+    return fullPath;
+  }
+
+  const queryString = new URLSearchParams(
+    Object.entries(params)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .map(([key, value]) => [key, String(value)]),
+  ).toString();
+
+  return queryString ? `${fullPath}?${queryString}` : fullPath;
+};
+
 /**
  * Generate a unique cache key for requests
  */
@@ -117,11 +152,16 @@ apiClient.interceptors.request.use(
     }
 
     // Log request details
-    Logger.debug('API Request', {
-      id: config.requestId,
-      method: config.method?.toUpperCase(),
-      url: config.url,
-      hasAuth: !!config.headers.Authorization,
+    const requestPayload = config.method === 'get' ? config.params : config.data;
+    Logger.network('request', {
+      'Base url': (config?.baseURL || API_CONFIG.BASE_URL || '').replace(/\/$/, ''),
+      Endpoint: config?.url || '',
+      Method: config.method?.toUpperCase(),
+      Header: maskSensitiveHeaders(config.headers),
+      Request: requestPayload ?? null,
+      'Full url': getFullUrl(config),
+      Timeout: config.timeout,
+      'Request id': config.requestId,
     });
 
     return config;
@@ -149,10 +189,15 @@ apiClient.interceptors.response.use(
     );
     pendingRequests.delete(dedupKey);
 
-    Logger.debug('API Response Success', {
-      id: config.requestId,
-      status: response.status,
-      url: config.url,
+    Logger.network('response', {
+      'Base url': (config?.baseURL || API_CONFIG.BASE_URL || '').replace(/\/$/, ''),
+      Endpoint: config?.url || '',
+      Method: config.method?.toUpperCase(),
+      Status: response.status,
+      Header: maskSensitiveHeaders(response.headers),
+      Response: response.data,
+      'Full url': getFullUrl(config),
+      'Request id': config.requestId,
     });
 
     return response.data;
@@ -196,6 +241,20 @@ apiClient.interceptors.response.use(
 
     const {response} = error;
     const status = response?.status;
+    Logger.network('response', {
+      'Base url': (originalRequest?.baseURL || API_CONFIG.BASE_URL || '').replace(
+        /\/$/,
+        '',
+      ),
+      Endpoint: originalRequest?.url || '',
+      Method: originalRequest?.method?.toUpperCase(),
+      Status: status || 'NETWORK_ERROR',
+      Header: maskSensitiveHeaders(response?.headers),
+      Response: response?.data ?? null,
+      Error: error?.message,
+      'Full url': getFullUrl(originalRequest || {}),
+      'Request id': originalRequest?.requestId,
+    });
 
     // Handle 401 Unauthorized - token expired
     if (status === HTTP_STATUS.UNAUTHORIZED) {

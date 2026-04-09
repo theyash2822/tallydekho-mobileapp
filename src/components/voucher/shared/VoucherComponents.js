@@ -12,16 +12,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../utils/Colors';
 import {CommonInputStyles, CommonLabelStyles, CommonDropdownStyles} from '../../../utils/CommonStyles';
 
-// Dummy Data
-export const dummyParties = [
-  'Amit Enterprises',
-  'Global Traders',
-  'Sharma Stores',
-];
-export const dummyInvoices = ['INV001', 'INV002', 'INV003'];
-export const dummyBanks = ['HDFC', 'SBI', 'ICICI'];
-export const dummyLedgers = ['Cash', 'Bank', 'Expenses'];
-export const dummyLedgerstwo = ['Sales', 'Purchases', 'Commission'];
+// Dropdown options should be supplied dynamically by parent screens.
+// Keeping this as an empty constant avoids static fallback data.
+export const EMPTY_OPTIONS = [];
 
 export const paymentMethods = ['Cash', 'Bank', 'UPI'];
 export const paymentMethodIcons = {

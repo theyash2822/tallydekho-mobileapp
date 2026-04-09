@@ -81,7 +81,25 @@ class LoggerClass {
   network(type, details) {
     if (LOG_CONFIG.enableNetworkLogs) {
       const icon = type === 'request' ? '📤' : '📥';
-      console.log(`${icon} [NETWORK] [${type.toUpperCase()}]`, details);
+      const formatValue = value => {
+        if (typeof value === 'string') {
+          return value;
+        }
+        try {
+          return JSON.stringify(value, null, 2);
+        } catch (e) {
+          return String(value);
+        }
+      };
+
+      console.log(`${icon} [NETWORK] [${type.toUpperCase()}]`);
+      if (details && typeof details === 'object') {
+        Object.entries(details).forEach(([key, value]) => {
+          console.log(`${key}: ${formatValue(value)}`);
+        });
+      } else {
+        console.log(formatValue(details));
+      }
     }
   }
 

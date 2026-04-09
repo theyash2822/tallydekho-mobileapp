@@ -40,6 +40,28 @@ const SalesScreen = () => {
   const [apiTopParties, setApiTopParties] = useState([]);
   const {selectedGuid, selectedFY} = useAuth();
 
+  const formatDisplayDate = value => {
+    if (!value) return '';
+    const dateObj = new Date(value);
+    if (Number.isNaN(dateObj.getTime())) return '';
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = String(dateObj.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDisplayTime = voucher => {
+    const rawTime = voucher?.time || voucher?.voucher_time || voucher?.createdAt;
+    if (!rawTime) return '';
+    const dateObj = new Date(rawTime);
+    if (Number.isNaN(dateObj.getTime())) return '';
+    return dateObj.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   // Fetch real sales vouchers from Tally
   useEffect(() => {
     if (!selectedGuid) return;
@@ -60,7 +82,8 @@ const SalesScreen = () => {
         reference: v.voucher_number || v.id,
         customer: v.party_name || '—',
         date: v.date ? new Date(v.date).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '',
-        fullDate: v.date || '',
+        fullDate: formatDisplayDate(v.date),
+        time: formatDisplayTime(v),
         amount: '₹' + Math.round(v.amount || 0).toLocaleString('en-IN'),
         isPaid: (v.amount || 0) > 0,
       }));
@@ -146,7 +169,7 @@ const SalesScreen = () => {
       id: 'sales-overdue',
       title: 'Credit Notes',
       value: '₹28.500',
-      change: '+8%',
+      change: '+8%', 
       changeType: 'negative',
       icon: Icons.Cheque,
     },
@@ -351,12 +374,22 @@ const SalesScreen = () => {
           </View>
           <View style={ScreenStyles.transactionInfo}>
             <View style={ScreenStyles.transactionRow}>
-              <Text style={ScreenStyles.transactionName}>{item.customer}</Text>
+              <Text
+                style={ScreenStyles.transactionName}
+                numberOfLines={1}
+                ellipsizeMode="tail">
+                {item.customer}
+              </Text>
               <View style={ScreenStyles.dotSeparator} />
-              <Text style={ScreenStyles.referenceText}>{item.reference}</Text>
+              <Text
+                style={ScreenStyles.referenceText}
+                numberOfLines={1}
+                ellipsizeMode="tail">
+                {item.reference}
+              </Text>
             </View>
             <Text style={ScreenStyles.transactionDate}>
-              {item.fullDate} | {item.time}
+              {[item.fullDate, item.time].filter(Boolean).join(' | ')}
             </Text>
           </View>
         </View>

@@ -571,15 +571,42 @@ const TALLY_BASE_URL = API_CONFIG.BASE_URL.replace('/app', '');
 async function tallyWrite(endpoint, body) {
   const {AsyncStorage} = await import('@react-native-async-storage/async-storage');
   const token = await AsyncStorage.getItem('authToken');
-  const response = await fetch(`${TALLY_BASE_URL}${endpoint}`, {
+  const url = `${TALLY_BASE_URL}${endpoint}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? {'Authorization': `Bearer ${token}`} : {}),
+  };
+  const safeHeaders = {
+    ...headers,
+    ...(headers.Authorization
+      ? {Authorization: `${headers.Authorization.slice(0, 12)}...`}
+      : {}),
+  };
+
+  Logger.network('request', {
+    'Base url': TALLY_BASE_URL.replace(/\/$/, ''),
+    Endpoint: endpoint,
+    Method: 'POST',
+    Header: safeHeaders,
+    Request: body,
+    'Full url': url,
+  });
+
+  const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? {'Authorization': `Bearer ${token}`} : {}),
-    },
+    headers,
     body: JSON.stringify(body),
   });
   const data = await response.json();
+  Logger.network('response', {
+    'Base url': TALLY_BASE_URL.replace(/\/$/, ''),
+    Endpoint: endpoint,
+    Method: 'POST',
+    Status: response.status,
+    Header: Object.fromEntries(response.headers.entries()),
+    Response: data,
+    'Full url': url,
+  });
   if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
   return data;
 }

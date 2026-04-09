@@ -4,12 +4,16 @@ import {
   SearchableDropdown,
   LabeledInput,
   PaymentMethodDropdown,
-  dummyLedgers,
+  EMPTY_OPTIONS,
 } from './shared/VoucherComponents';
 import {voucherFormStyles} from './shared/VoucherStyles';
 
 // Main Contra Voucher Form
-const ContraVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) => {
+const ContraVoucherForm = forwardRef(({
+  scrollViewRef,
+  isKeyboardVisible,
+  ledgerOptions = EMPTY_OPTIONS,
+}, ref) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Bank');
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
 
@@ -56,7 +60,7 @@ const ContraVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) =
         placeholder="Search Ledger"
         value={fromLedgerSearch}
         onChange={setFromLedgerSearch}
-        data={dummyLedgers}
+        data={ledgerOptions}
         scrollViewRef={scrollViewRef}
         inputRef={fromLedgerInputRef}
         nextInputRef={toLedgerInputRef}
@@ -68,7 +72,7 @@ const ContraVoucherForm = forwardRef(({scrollViewRef, isKeyboardVisible}, ref) =
         placeholder="Search Ledger"
         value={toLedgerSearch}
         onChange={setToLedgerSearch}
-        data={dummyLedgers}
+        data={ledgerOptions}
         scrollViewRef={scrollViewRef}
         inputRef={toLedgerInputRef}
         nextInputRef={amountInputRef}

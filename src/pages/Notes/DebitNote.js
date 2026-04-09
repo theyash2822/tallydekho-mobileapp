@@ -4,8 +4,8 @@ import {tallyWriteAPI} from '../../services/api/apiService';
 import {useAuth} from '../../context/AuthContext';
 
 
-import {useAuth} from '../../context/AuthContext';
-import {ScrollView, View, StyleSheet, Platform} from 'react-native';
+//import {useAuth} from '../../context/AuthContext';
+//import {ScrollView, View, StyleSheet, Platform} from 'react-native';
 import Header from '../../components/common/Header';
 import Summary from '../../components/Sales-purchaseInvoice/Summary';
 import DebitNoteInfo from '../../components/notes/DebitNoteInfo';

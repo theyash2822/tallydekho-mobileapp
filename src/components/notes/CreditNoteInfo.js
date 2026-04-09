@@ -197,7 +197,7 @@ const CreditNoteInfo = forwardRef(({scrollViewRef, products, setProducts, logist
       )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -264,8 +264,6 @@ const styles = StyleSheet.create({
   section: {
     marginTop: 12,
   },
-});
-
 });
 
 export default CreditNoteInfo;

@@ -10,12 +10,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../utils/Colors';
 import {CommonInputStyles, CommonLabelStyles, CommonDropdownStyles} from '../../utils/CommonStyles';
 
-// Dummy Data (Assumed to be declared somewhere globally)
-const dummyParties = ['Amit Enterprises', 'Global Traders', 'Sharma Stores'];
-const dummyInvoices = ['INV001', 'INV002', 'INV003'];
-const dummyBanks = ['HDFC', 'SBI', 'ICICI'];
-const dummyLedgers = ['Cash', 'Bank', 'Expenses'];
-const dummyLedgerstwo = ['Sales', 'Purchases', 'Commission'];
+// Static sample lists removed; supply dynamic values from API/state.
+const dummyParties = [];
+const dummyInvoices = [];
+const dummyBanks = [];
+const dummyLedgers = [];
+const dummyLedgerstwo = [];
 
 const voucherTypes = [
   {type: 'Payment', icon: 'card-outline'},

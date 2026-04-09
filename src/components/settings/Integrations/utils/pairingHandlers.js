@@ -24,7 +24,7 @@ export const handleCodeChange = (text, index, code, setCode, inputRefs) => {
   setCode(newCode);
 
   // Move to next input if text is entered
-  if (text && index < 3) {
+  if (text && index < code.length - 1) {
     setTimeout(() => {
       inputRefs.current[index + 1]?.focus();
     }, 0);

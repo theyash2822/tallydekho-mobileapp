@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, forwardRef} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,8 @@ import AddDispatchSection from './AddDispatchSection';
 import ToolTip from '../Sales-purchaseInvoice/ToolTip';
 import SearchCustomer from '../common/SearchCustomer';
 
-const ___COMP = forwardRef(({DeliveryNoteInfo = forwardRef(({ scrollViewRef, onDispatchDropdownToggle, dispatchItems, setDispatchItems }) => {
+const DeliveryNoteInfo = forwardRef(
+  ({scrollViewRef, onDispatchDropdownToggle, dispatchItems, setDispatchItems}, ref) => {
   const [deliveryNoteNumber, setDeliveryNoteNumber] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchDocumentQuery, setSearchDocumentQuery] = useState('');
@@ -264,7 +265,8 @@ const ___COMP = forwardRef(({DeliveryNoteInfo = forwardRef(({ scrollViewRef, onD
       )}
     </View>
   );
-};
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
